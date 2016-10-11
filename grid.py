@@ -5,7 +5,7 @@ import time
 pygame.init()
 n=20
 step = round(800 / n)
-white = (225, 225, 225)
+white = (240, 240, 240)
 bright = (255, 255, 255)
 black = (0, 0, 0)
 
@@ -16,6 +16,10 @@ clock = pygame.time.Clock()
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 gameDisplay.fill(white)
+
+def exit():
+    pygame.quit()
+    quit()
 
 def text_objects(text,font):
     textSurface = font.render(text, True, black)
@@ -28,6 +32,21 @@ def grid(n, step):
     for i in range(0,n):
         pygame.draw.line(gameDisplay, black, (0, step * i), (800 , step * i), 1)
 
+def button(msg,x,y,w,h,ic,ac, action = None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    if x + w > mouse[0] > x and y + h > mouse[1] > y:
+        pygame.draw.rect(gameDisplay, ac, (x,y,w,h))
+        if click[0] == 1 and action != None:
+            action()
+
+    else:
+        pygame.draw.rect(gameDisplay, ic, (x,y,w,h))
+
+    smallText = pygame.font.Font("freesansbold.ttf",20)
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = ( (x + (w/2)), (y + (h/2)) )
+    gameDisplay.blit(textSurf, textRect)
 
 def intro():
     intro = True
@@ -41,10 +60,10 @@ def intro():
         TextRect.center = ((display_width/2),(display_height/2))
         gameDisplay.blit(TextSurf, TextRect)
 
-        mouse = pygame.mouse.get_pos()
-        print mouse
+        button("Lets begin!",300,450,150,50,white,bright,game_loop)
+
         pygame.display.update()
-        clock.tick(15)
+        clock.tick(30)
 
 def game_loop():
 
@@ -52,11 +71,12 @@ def game_loop():
         for event in pygame.event.get():
             grid(n, step)
             mouse = pygame.mouse.get_pos()
-            print mouse
             for i in range(0,n):
                 for j in range(0,n):
                     if step * i < mouse[0] < step * (i+1) and step * j < mouse[1] < step * (j + 1):
                         pygame.draw.rect(gameDisplay, bright, ((step * i)+1,(step * j)+1,step-1, step-1))
+
+                        
 
             pygame.display.update()
             clock.tick(60)
@@ -68,5 +88,5 @@ def game_loop():
                 quit()
 
         pygame.display.update()
-#intro()
-game_loop()
+intro()
+exit()
